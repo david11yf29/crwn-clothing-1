@@ -23,8 +23,26 @@ class App extends React.Component {
 
   componentDidMount() {
     // this will give back a function, invoke when need close!
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async user => {
-      createUserProfileDocument(user);
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      //createUserProfileDocument(userAuth);
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+
+        userRef.onSnapshot(snapShot => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data()
+            }
+          }, () => {
+            console.log(this.state)
+          })
+        })
+      } else {
+        this.setState({
+          currentUser: userAuth
+        })
+      }
     })
   }
  
